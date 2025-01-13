@@ -7,8 +7,9 @@ const schema = mongoose.Schema({
     first_name: String,
     last_name: String,
     phone_number: String,
-    language: { type: String, default: DEFAULT_LANG }
+
 },{
+    versionKey: false,
     timestamps: {
         createdAt: "created_at",
         updatedAt: "updated_at"

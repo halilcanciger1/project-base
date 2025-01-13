@@ -1,7 +1,7 @@
 var express = require("express");
 var router = express.Router();
 
-const Roles = require("../db/roles");
+const Roles = require("../db/Roles");
 const RolePrivileges = require("../db/RolesPrivileges");
 const Response = require("../lib/Response");
 const Enum = require("../config/enum");

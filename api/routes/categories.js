@@ -5,6 +5,7 @@ const Response = require("../lib/Response");
 const Enum = require("../config/enum");
 const CustomError = require("../lib/Error");
 const config = require('../config/config1');
+const AuditLogs = require("../lib/Auditlogs");
 
 router.get('/', async (req, res, next) => {
     try {
@@ -23,13 +24,15 @@ router.post('/add', async (req, res, next) => {
     try {
         if (!body.name) throw new CustomError(Enum.HTTP_CODES.BAD_REQUEST, "Validation Error!", "name field must be filled")
 
-            let category = new Categories({
-                name: body.name,
-                is_active: true,
-                created_by: req.user?.id
-            });
+        let category = new Categories({
+            name: body.name,
+            is_active: true,
+            created_by: req.user?.id
+        });
 
         await category.save();
+
+        AuditLogs.info(req.user?.email, "Categories", "Add", category);
 
         res.json(Response.successResponse({ success: true }));
 
@@ -48,17 +51,19 @@ router.post('/update', async (req, res, next) => {
         if (!body.name) throw new CustomError(Enum.HTTP_CODES.BAD_REQUEST, "Validation Error!", "name field must be filled")
 
         let updates = {};
-        
-        if(body.name) updates.name = body.name;
-        if(typeof body.is_active === "boolean") updates.is_active = body.is_active;
 
-        await Categories.updateOne({ _id: body._id}, updates);
+        if (body.name) updates.name = body.name;
+        if (typeof body.is_active === "boolean") updates.is_active = body.is_active;
 
-        res.json(Response.successResponse({ success: true}));
+        await Categories.updateOne({ _id: body._id }, updates);
+
+        AuditLogs.info(req.user?.email, "Categories", "Update", { _id: body._id, ...updates });
+
+        res.json(Response.successResponse({ success: true }));
 
     }
 
-    catch(err) {
+    catch (err) {
         let errorResponse = Response.errorResponse(err);
         res.status(errorResponse.code).json(errorResponse);
     }
@@ -71,14 +76,16 @@ router.post('/delete', async (req, res, next) => {
     try {
         if (!body.name) throw new CustomError(Enum.HTTP_CODES.BAD_REQUEST, "Validation Error!", "name field must be filled")
 
-            await Categories.deleteOne
+        await Categories.deleteOne
             ({ _id: body._id });
 
-        res.json(Response.successResponse({ success: true}));
+        AuditLogs.info(req.user?.email, "Categories", "Delete", { _id: body._id});
+
+        res.json(Response.successResponse({ success: true }));
 
     }
 
-    catch(err) {
+    catch (err) {
         let errorResponse = Response.errorResponse(err);
         res.status(errorResponse.code).json(errorResponse);
     }

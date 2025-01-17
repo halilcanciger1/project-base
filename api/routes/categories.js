@@ -4,10 +4,10 @@ const Categories = require("../db/Categories");
 const Response = require("../lib/Response");
 const Enum = require("../config/enum");
 const CustomError = require("../lib/Error");
-const config = require('../config/config1');
 const AuditLogs = require("../lib/Auditlogs");
+const logger = require("../lib/logger/LoggerClass");
 
-router.get('/', async (req, res, next) => {
+router.get('/', async (req, res) => {
     try {
         let categories = await Categories.find();
         res.json(Response.successResponse(categories));
@@ -19,7 +19,7 @@ router.get('/', async (req, res, next) => {
     }
 });
 
-router.post('/add', async (req, res, next) => {
+router.post('/add', async (req, res) => {
     let body = req.body;
     try {
         if (!body.name) throw new CustomError(Enum.HTTP_CODES.BAD_REQUEST, "Validation Error!", "name field must be filled")
@@ -33,6 +33,7 @@ router.post('/add', async (req, res, next) => {
         await category.save();
 
         AuditLogs.info(req.user?.email, "Categories", "Add", category);
+        logger.info(req.user?.email, "Categories", "Add", category);
 
         res.json(Response.successResponse({ success: true }));
 
@@ -40,12 +41,13 @@ router.post('/add', async (req, res, next) => {
 
 
     catch (err) {
+        logger.error(req.user?.email, "Categories", "Add", err);
         let errorResponse = Response.errorResponse(err);
         res.status(errorResponse.code).json(errorResponse);
     }
 
 });
-router.post('/update', async (req, res, next) => {
+router.post('/update', async (req, res) => {
     let body = req.body;
     try {
         if (!body.name) throw new CustomError(Enum.HTTP_CODES.BAD_REQUEST, "Validation Error!", "name field must be filled")
@@ -71,12 +73,13 @@ router.post('/update', async (req, res, next) => {
 });
 
 
-router.post('/delete', async (req, res, next) => {
+router.post('/delete', async (req, res) => {
     let body = req.body;
     try {
         if (!body.name) throw new CustomError(Enum.HTTP_CODES.BAD_REQUEST, "Validation Error!", "name field must be filled")
 
         await Categories.deleteOne
+            // eslint-disable-next-line no-unexpected-multiline
             ({ _id: body._id });
 
         AuditLogs.info(req.user?.email, "Categories", "Delete", { _id: body._id});

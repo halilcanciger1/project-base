@@ -6,10 +6,9 @@ const RolePrivileges = require("../db/RolesPrivileges");
 const Response = require("../lib/Response");
 const Enum = require("../config/enum");
 const CustomError = require("../lib/Error");
-const config = require('../config/config1');
 const role_privileges = require("../config/role_privileges");
 
-router.get("/", async (req, res, next) => {
+router.get("/", async (req, res ) => {
     try {
         let roles = await Roles.find();
 
@@ -23,7 +22,7 @@ router.get("/", async (req, res, next) => {
 
 });
 
-router.post("/add", async (req, res, next) => {
+router.post("/add", async (req, res, ) => {
     let body = req.body;
 
 
@@ -63,7 +62,7 @@ router.post("/add", async (req, res, next) => {
 });
 
 
-router.post("/update", async (req, res, next) => {
+router.post("/update", async (req, res ) => {
     let body = req.body;
 
 
@@ -113,7 +112,7 @@ router.post("/update", async (req, res, next) => {
 
 });
 
-router.post("/delete", async (req, res, next) => {
+router.post("/delete", async (req, res) => {
     let body = req.body;
 
 

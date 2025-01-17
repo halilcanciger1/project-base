@@ -4,7 +4,7 @@ const Response = require("../lib/Response");
 const moment = require("moment");
 var router = express.Router();
 
-router.post("/", async (req, res, next) => {
+router.post("/", async (req, res) => {
     try {
 
         let body = req.body;

@@ -12,7 +12,7 @@ const UserRoles = require("../db/UserRoles");
 var router = express.Router();
 
 /* GET users listing. */
-router.get('/', async (req, res, next) => {
+router.get('/', async (req, res) => {
 
   try {
     let users = await Users.find({});
